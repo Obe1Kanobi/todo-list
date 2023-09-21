@@ -1,25 +1,14 @@
-import React from 'react';
-import logo from './assets/icons/logo.svg';
-import {SApp, SHeader, SLink, SLogo} from "./assets/styles/app.styles";
+import React, { useState } from 'react';
+import { Todolist } from './components/Todolist';
 
-function App() {
+export function App() {
     return (
-        <SApp>
-            <SHeader>
-                <SLogo src={logo} alt="logo"/>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <SLink
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </SLink>
-            </SHeader>
-        </SApp>
+        <div className='App'>
+            <Todolist title='TODOList' />
+            {/* тут мы создали пропс, title это пропс, который
+            мы тут прописали и вызвали в TodoList
+            a теперь мы добавили ещё и todo, это наши таски
+            которые являются массивами и содежат данные которые нужны по задаче*/}
+        </div>
     );
 }
-
-export default App;
