@@ -33,18 +33,36 @@ type PropsType = {
 };
 
 export function Todolist({ title }: PropsType) {
-    // Отрисовывает изначальные таски
+    //отрисовывает изначальные таски
     const [todoList, setTodoList] = useState(Todo);
-    //
+
+    //хук для фильтров
     const [activeFilter, setActiveFilter] = useState('all');
 
-    // Хук для инпута на добавление названия задачи
+    //хук для инпута на добавление названия задачи
     const [newTitle, setNewTitle] = useState('');
 
+    //хук для выведения сообщения об ошибке
     const [error, setError] = useState<string | null>(null);
 
-    const [isEditing, setIsEditing] = useState<string | null>(null); // Состояние, чтобы отслеживать редактирование
-    const [editedTitle, setEditedTitle] = useState<string>(''); // Состояние для хранения измененного заголовка
+    //состояние чтобы отслеживать редактирование задач
+    const [isEditing, setIsEditing] = useState<string | null>(null);
+
+    //состояние для хранения измененного заголовка
+    const [editedTitle, setEditedTitle] = useState<string>('');
+
+    //восстановите список задач из localStorage при загрузке компонента
+    useEffect(() => {
+        const savedTodoList = localStorage.getItem('todoList');
+        if (savedTodoList) {
+            setTodoList(JSON.parse(savedTodoList));
+        }
+    }, []);
+
+    //сохраняет в localStorage TodoList если он изменяется
+    useEffect(() => {
+        localStorage.setItem('todoList', JSON.stringify(todoList));
+    }, [todoList]);
 
     //добавление новых задач и их сохранение с стэйте
     const addTodo = (title: string) => {
@@ -53,26 +71,13 @@ export function Todolist({ title }: PropsType) {
         setTodoList(newTodoList);
     };
 
-    // Восстановите список задач из localStorage при загрузке компонента
-    useEffect(() => {
-        const savedTodoList = localStorage.getItem('todoList');
-        if (savedTodoList) {
-            setTodoList(JSON.parse(savedTodoList));
-        }
-    }, []);
-
-    // сохраняет в localStorage TodoList если он изменяется
-    useEffect(() => {
-        localStorage.setItem('todoList', JSON.stringify(todoList));
-    }, [todoList]);
-
-    // Удаляет таски из Todo
+    //удаляет таски из Todo
     const handleDeleteTodo = (id: string) => {
         let filteredTodos = todoList.filter(task => task.id !== id);
         setTodoList(filteredTodos);
     };
 
-    // функция для изменения статуса таски
+    //функция для изменения статуса таски
     const changeCompleted = (Todoid: string, completed: boolean) => {
         let taskTodo = todoList.find(Todo => Todo.id === Todoid);
         if (taskTodo) {
@@ -90,20 +95,19 @@ export function Todolist({ title }: PropsType) {
         }
     };
 
-    // Функция для сохранения отредактированной задачи
+    //функция для сохранения отредактированной задачи
     const saveEditedTodo = (id: string) => {
         const updatedTodoList = todoList.map(task => (task.id === id ? { ...task, title: editedTitle } : task));
         setTodoList(updatedTodoList);
-        setIsEditing(null); // Завершаем редактирование
+        setIsEditing(null); //завершение редактирования
     };
 
-    // Функция для отмены редактирования
+    //функция для отмены редактирования
     const cancelEditing = () => {
-        setIsEditing(null); // Завершаем редактирование
+        setIsEditing(null); //завершаем редактирование
     };
 
-    ////// Рефакторим код, выносим все обработчики из кнопок
-
+    //////рефакторим код, выносим все обработчики из кнопок
     const onChangeNewTitle = (e: ChangeEvent<HTMLInputElement>) => {
         setNewTitle(e.currentTarget.value);
     };
@@ -125,7 +129,7 @@ export function Todolist({ title }: PropsType) {
             setError('Обязательное поле!');
         }
     };
-    //// конец рефакторинга
+    //////конец рефакторинга
 
     return (
         <SharedCont>
@@ -156,7 +160,7 @@ export function Todolist({ title }: PropsType) {
                     })
                     .map(task => (
                         <LiStyle key={task.id}>
-                            {isEditing === task.id ? ( // Если редактирование
+                            {isEditing === task.id ? ( //eсли редактирование названия
                                 <>
                                     <InputSpanStyle
                                         type='text'
@@ -164,7 +168,7 @@ export function Todolist({ title }: PropsType) {
                                         onChange={e => setEditedTitle(e.target.value)}
                                     />
                                     <ButtonSave onClick={() => saveEditedTodo(task.id)}>Save</ButtonSave>
-                                    <ButtonCancel onClick={() => cancelEditing()}>Cancel</ButtonCancel>
+                                    <ButtonCancel onClick={cancelEditing}>Cancel</ButtonCancel>
                                 </>
                             ) : (
                                 <>
